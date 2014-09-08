@@ -45,7 +45,12 @@ function go() {
       var action = d.select("input[name=type]:checked").property("value");
       var fnstr = d.select("[name=func]").property("value");
       if (action != "counter") {
-        var fn = eval("(" + fnstr + ")");
+        try {
+          var fn = eval("(" + fnstr + ")");
+        }
+        catch (e) {
+          throw new Error("Error evaluating function: " + fnstr + ": " + e);
+        }
       }
       filters.push({action: action, fn: fn});
     });
@@ -59,6 +64,7 @@ function go() {
 
       d3.select("#results").text(JSON.stringify(data, null, 2));
     }
+    d3.select("#error").text("");
   }
   catch(e) {
     logError(e);
@@ -67,34 +73,49 @@ function go() {
 }
 
 function setState() {
-  var rules = d3.select("#processing form:not(#processing-template)");
+  var rules = d3.selectAll("#processing form:not(#processing-template)");
 
   var url = new URL(location);
-  url.search = "";
 
-  url.searchParams.set("url", d3.select("#apiurl").property("value"));
-  url.searchParams.set("rulecount", rules.size());
+  var searchParams = new Map();
+
+  searchParams.set("url", d3.select("#apiurl").property("value"));
+  searchParams.set("rulecount", rules.size());
 
   rules.each(function(datum, i) {
     var d = d3.select(this);
     var action = d.select("input[name=type]:checked").property("value");
     var fnstr = d.select("[name=func]").property("value");
-    url.searchParams.set("rule" + i + "_action", action);
-    url.searchParams.set("rule" + i + "_fn", fnstr);
+    searchParams.set("rule" + i + "_action", action);
+    searchParams.set("rule" + i + "_fn", fnstr);
   });
 
+  var paramList = [];
+  searchParams.forEach(function(v, k) {
+    paramList.push(encodeURIComponent(k) + "=" + encodeURIComponent(v));
+  });
+  url.search = "?" + paramList.join("&");
   history.replaceState(null, "Tool For Analyzing Crashes From Search", url.href);
 }
 
 function getState() {
   var url = window.location;
 
-  d3.select("#apiurl").property("value", url.searchParams.get("url"));
+  var q = url.search;
+  if (q.startsWith("?")) {
+    q = q.slice(1);
+  }
+  var searchParams = new Map();
+  q.split(/&/).forEach(function(d) {
+    var parts = d.split("=");
+    searchParams.set(decodeURIComponent(parts[0]), decodeURIComponent(parts[1]));
+  });
+  d3.select("#apiurl").property("value", searchParams.get("url"));
 
   d3.select("#processing form:not(#processing-template)").remove();
-  for (var i = 0; i < parseInt(url.searchParams.get("rulecount")); ++i) {
-    var action = url.searchParams.get("rule" + i + "_action");
-    var fnstr = url.searchParams.get("rule" + i + "_fn");
+  for (var i = 0; i < parseInt(searchParams.get("rulecount")); ++i) {
+    var action = searchParams.get("rule" + i + "_action");
+    var fnstr = searchParams.get("rule" + i + "_fn");
 
     var rule = newRule();
     rule.selectAll("input[name=type]").filter(function(d, i) {

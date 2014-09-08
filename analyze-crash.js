@@ -44,7 +44,7 @@ function go() {
       var d = d3.select(this);
       var action = d.select("input[name=type]:checked").property("value");
       var fnstr = d.select("[name=func]").property("value");
-      if (fnstr != "counter") {
+      if (action != "counter") {
         var fn = eval("(" + fnstr + ")");
       }
       filters.push({action: action, fn: fn});

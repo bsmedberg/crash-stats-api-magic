@@ -37,7 +37,8 @@
         <input type="radio" name="type" value="map" checked> .map
         <input type="radio" name="type" value="filter"> .filter
         <input type="radio" name="type" value="counter"> .counter
-        (<textarea name="func" rows="5" cols="80"></textarea>)
+        <input type="radio" name="type" value="call"> &lt;call&gt;
+        (<textarea name="func" rows="5" cols="80" placeholder="function(d) { return JSON.parse(d.async_shutdown_timeout); }"></textarea>)
         <input type="button" onclick="removerule(this)" value="Remove Rule">
     </form>
   </ol>

@@ -65,7 +65,11 @@ function go() {
     if (gData) {
       var data = gData.hits;
       filters.forEach(function(filter) {
-        data = data[filter.action](filter.fn);
+        if (filter.action == "call") {
+          data = filter.fn(data);
+        } else {
+          data = data[filter.action](filter.fn);
+        }
       });
 
       d3.select("#results").text(JSON.stringify(data, null, 2));

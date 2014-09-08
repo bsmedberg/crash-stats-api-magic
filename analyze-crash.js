@@ -10,6 +10,12 @@ Array.prototype.counter = function() {
   return r;
 };
 
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(substr) {
+    return this.indexOf(substr) == 0;
+  };
+}
+
 var gData;
 
 function logError(e) {

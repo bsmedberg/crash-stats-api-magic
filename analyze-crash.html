@@ -1,0 +1,53 @@
+<head>
+  <meta charset="utf-8">
+  <title>Tool for Analyzing Crashes From Search</title>
+
+  <style type="text/css">
+    body {
+      background-color: white;
+      color: black;
+      font-family: sans-serif;
+    }
+
+    #error {
+      font-weight: bold;
+      color: red;
+      white-space: pre-wrap;
+    }
+
+    #processing-template {
+      display: none;
+    }
+  </style>
+<body>
+  <h1>Tool for Analyzing Crashes From Search</h1>
+
+  <p>URL: <input id="apiurl" type="text" length="60" placeholder="API URL">
+    <input type="button" onclick="fetch()" value="Fetch">
+
+  <p id="error"></p>
+
+  <p><span id="count">n/a</span> results found.
+
+  <h2>Processing Rules</h2>
+
+  <ol id="processing">
+    <form id="processing-template">
+      <li>
+        <input type="radio" name="type" value="filter"> .filter
+        <input type="radio" name="type" value="map"> .map
+        <input type="radio" name="type" value="counter"> .counter
+        (<textarea name="func" rows="5" cols="80"></textarea>)
+        <input type="button" onclick="removerule(this)" value="Remove Rule">
+    </form>
+  </ol>
+
+  <p><input type="button" onclick="newRule()" value="New Rule">
+  <p><input type="button" onclick="go()" value="Recalculate">
+
+  <h2>Results</h2>
+
+  <pre id="results"></pre>
+
+<script src="d3.v3.min.js" charset="utf-8"></script>
+<script src="analyze-crash.js"></script>
